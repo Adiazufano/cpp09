@@ -6,15 +6,38 @@
 /*   By: aldiaz-u <aldiaz-u@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 18:59:50 by aldiaz-u          #+#    #+#             */
-/*   Updated: 2026/02/24 19:12:44 by aldiaz-u         ###   ########.fr       */
+/*   Updated: 2026/02/27 12:30:50 by aldiaz-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitcoinExchange.hpp"
 
-
-bool	isValidDate(int day, int month, int year)
+std::string*	split(string &line, char delimiter)
 {
+	int index = 0;
+	string *date = new string[3];
+	int pos = line.find(delimiter);
+	while ( pos != static_cast<int>(string::npos))
+	{
+		date[index] = line.substr(0, pos);
+		line.erase(0, pos + 1);
+		index++;
+		pos = line.find(delimiter);
+	}
+	date[index] = line;
+	return (date);
+}
+
+bool	isValidDate(string &line, char separator)
+{
+	string date = line.substr(0, line.find(separator));
+	string *splitDate;
+
+	splitDate = split(date, '-');
+	int day = atoi(splitDate[2].c_str());
+	int	month = atoi(splitDate[1].c_str());
+	int year = atoi(splitDate[0].c_str());
+	delete[] splitDate;
 	struct tm t = {};
 	t.tm_mday = day;
 	t.tm_mon = month - 1;
@@ -27,6 +50,7 @@ bool	isValidDate(int day, int month, int year)
 			t.tm_mon == month - 1 &&
 			t.tm_year == year - 1900);
 }
+
 int	invalidCharErr(string &line, size_t index, char separator, bool requireSpaces)
 {
 	if (!isdigit(line[index]) && line[index] != '-' && line[index] != '.' && line[index] != separator)
@@ -38,10 +62,10 @@ int	invalidCharErr(string &line, size_t index, char separator, bool requireSpace
 	return (0);
 }
 
-void	checkInput(std::ifstream &readInput, string &line, string filename, char separator, bool requireSpaces, BitcoinExchange &b)
+void	checkInput(std::ifstream &readInput, string &line, string filename, char separator, bool requireSpaces, BitcoinExchange &bt)
 {
 	int	haveError;
-	int	nline = 1;
+	int	nline = 2;
 	getline(readInput, line);
 	while (getline(readInput, line))
 	{
@@ -70,55 +94,25 @@ void	checkInput(std::ifstream &readInput, string &line, string filename, char se
 		value = strtof(line.substr(line.find(separator) + 1, line.length()).c_str(), NULL);
 		if (haveError)
 			cout << filename << " line: " << nline << " invalid format" << endl;
+		else if (!isValidDate(line, separator))
+			cout << filename << " line: " << nline << " invalid date " << endl;
 		else
 		{
-			b.addValue(date, value);
+			if (separator == ',')
+				bt.addValue(date, value);
+			else
+			{
+				if (value < 0)
+					cout << "Error: not positive value" << endl;
+				else if (value > 1000)
+					cout << filename << " line: " << nline << " too large a number " << endl;
+				else
+					cout << std::fixed << std::setprecision(2) << date << " => " << value << " = " << static_cast<double>(value * bt.getValue(date)) << endl;
+			}
 		}
 		nline++;
 	}
 }
-
-/* void	checkDataCsv(std::ifstream &readInput, string &line, string filename)
-{
-	int	haveError;
-	int	nline = 0;
-	string extension;
-	getline(readInput, line);
-	while (getline(readInput, line))
-	{
-		int counter = 0;
-		int points = 0;
-		haveError = 0;
-		for (size_t i = 0; i < line.length() ; i++)
-		{
-			if (!isdigit(line[i]) && (line[i] != '-' && line[i] != ',' && line[i] != '.'))
-			{
-				haveError++;
-				cout << filename << " line: " << nline << " contain invalid chars" << endl;
-				break;
-			}
-			else if (i + 1 < line.length() && (line[i] == '-' && !isdigit(line[i + 1])))
-			{
-				haveError++;
-				cout << filename << " line: " << nline << " contain invalid chars" << endl;
-				break;
-			}
-			if (line[i] == ',')
-				counter++;
-			if (line[i] == '.')
-				points++;
-		}
-		if (haveError == 0 && (counter == 0 || counter > 1 || points > 1))
-		{
-			haveError++;
-			cout << filename << "line: " << nline << " contains an inappropriate number of , or . " << endl;
-		}
-		if (haveError == 0)
-			cout << line << endl;
-		nline++;
-	}
-} */
-
 
 int	main(int argc, char *argv[])
 {
@@ -131,21 +125,12 @@ int	main(int argc, char *argv[])
 
 		if (argc != 2)
 			throw BitcoinExchange::InvalidFormat();
-		std::ifstream readInput(argv[1]);
-		checkInput(readInput, line, argv[1], '|', true, bt);
-		cout << endl;
 		std::ifstream readData("data.csv");
 		checkInput(readData, line, "data.csv", ',', false, bt);
-		readInput.close();
+		std::ifstream readInput(argv[1]);
+		checkInput(readInput, line, argv[1], '|', true, bt);
 		readData.close();
-		string t = "2022-03-29,47115.93";
-		float f = bt.getValue("2022-03-29");
-		cout << f << endl;
-		/* int i = t.find(",");
-		string k = t.substr(0, i);
-		string k2 = t.substr(i + 1, k.length());
-		string date[3] = split
-		cout << k2 << endl; */
+		readInput.close();
 	}
 	catch(const std::exception& e)
 	{
