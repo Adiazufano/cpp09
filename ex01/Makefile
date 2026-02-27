@@ -1,4 +1,4 @@
-NAME=btc
+NAME=RPN
 SRCS=main.cpp RPN.cpp
 OBJS=$(SRCS:.cpp=.o)
 CXX=c++
