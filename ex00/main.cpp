@@ -6,7 +6,7 @@
 /*   By: aldiaz-u <aldiaz-u@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 18:59:50 by aldiaz-u          #+#    #+#             */
-/*   Updated: 2026/02/27 12:30:50 by aldiaz-u         ###   ########.fr       */
+/*   Updated: 2026/03/13 12:23:56 by aldiaz-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,12 @@ int	main(int argc, char *argv[])
 		if (argc != 2)
 			throw BitcoinExchange::InvalidFormat();
 		std::ifstream readData("data.csv");
+		if (readData.fail())
+			throw std::runtime_error("data error");
 		checkInput(readData, line, "data.csv", ',', false, bt);
 		std::ifstream readInput(argv[1]);
+		if (readInput.fail())
+			throw std::runtime_error("input error");
 		checkInput(readInput, line, argv[1], '|', true, bt);
 		readData.close();
 		readInput.close();
