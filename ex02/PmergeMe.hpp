@@ -36,9 +36,25 @@ class PmergeMe
 		template<typename T>
 		void	fordJohnson(std::vector<T>& secuenceV)
 		{
+			clock_t tStart = clock();
+			fordJohnsonHelper(secuenceV);
+			cout << "Time to process a range of " << secuenceV.size() << " elements with std::vector: " << (double)(clock() - tStart)/CLOCKS_PER_SEC  * 1000 << "ms" << endl;
+		}
+
+		template<typename T>
+		void fordJohnson(std::list<T>& secuenceL)
+		{
+			clock_t tStart = clock();
+			fordJohnsonHelper(secuenceL);
+			cout << "Time to process a range of " << secuenceL.size() << " elements with std::list: " << (double)(clock() - tStart)/CLOCKS_PER_SEC * 1000 << "ms" << endl;
+		}
+		template<typename T>
+		void fordJohnsonHelper(std::vector<T>& secuenceV)
+		{
 			size_t size = secuenceV.size();
 			if (size <= 1)
-				return;
+				return;  // ✅ Sin imprimir tiempo
+			
 			T leftover = T();
 			bool hasLeftover = false;
 			if (secuenceV.size() % 2 != 0)
@@ -62,7 +78,7 @@ class PmergeMe
 			for (size_t index = 0; index < vectorX.size(); index++)
 				mainChain.push_back(vectorX[index].second);
 			
-			fordJohnson(mainChain);
+			fordJohnsonHelper(mainChain);  // ✅ Recursión sin timing
 			/*Insertar el primer menor (par del menor mainchain[0])
 			  encontrar e par cuyo mayor es mainChain[0]*/
 			std::vector<T> pending;
@@ -125,16 +141,17 @@ class PmergeMe
 			*it = value;
 		}
 		template<typename T>
-		void	fordJohnson(std::list<T>& secuenceL)
+		void	fordJohnsonHelper(std::list<T>& secuenceL)
 		{
 			size_t size = secuenceL.size();
 			if (size <= 1)
-				return ;
+				return;  // ✅ Sin imprimir tiempo
+			
 			T leftover = T();
 			bool hasLeftover = false;
 			if (secuenceL.size() % 2 != 0)
 			{
-				leftover = getListValue(secuenceL, size - 1);
+				leftover = secuenceL.back();
 				hasLeftover = true;
 				secuenceL.pop_back();
 				size = secuenceL.size();
@@ -150,23 +167,24 @@ class PmergeMe
 			}
 			//extraer mayores y ordenarlos
 			std::list<T> mainChain;
-			for (size_t index = 0; index < listX.size(); index++)
+			for (typename std::list<std::pair<T, T> >::iterator it = listX.begin(); it != listX.end(); ++it)
 			{
-				std::pair<T, T> value = getListValue(listX, index);
-				mainChain.push_back(value.second);
+				mainChain.push_back(it->second); 
 			}
-			fordJohnson(mainChain);
+
+			fordJohnsonHelper(mainChain);
+
 			std::list<T> pending;
 			std::vector<bool> marked(listX.size(), false);
-			for (size_t index = 0; index < mainChain.size(); index++)
+			for (typename std::list<T>::iterator mainIt = mainChain.begin(); mainIt != mainChain.end(); ++mainIt)
 			{
-				T mainChainValue = getListValue(mainChain, index);
-				for (size_t j = 0; j < listX.size(); j++)  // Busca en listX
+				T mainChainValue = *mainIt;
+				size_t j = 0;
+				for (typename std::list<std::pair<T, T> >::iterator listXit = listX.begin(); listXit != listX.end(); ++listXit, ++j)
 				{
-					std::pair<T, T> vectorXValue = getListValue(listX, j);
-					if (vectorXValue.second == mainChainValue && !marked[j])
+					if (listXit->second == mainChainValue && !marked[j])
 					{
-						pending.push_back(vectorXValue.first);
+						pending.push_back(listXit->first);
 						marked[j] = true;
 						break;
 					}
@@ -175,13 +193,16 @@ class PmergeMe
 			mainChain.insert(mainChain.begin(), pending.front());
 			std::vector<size_t> jSeq = jacobsthal(pending.size() - 1);  
 			std::vector<bool> inserted(pending.size(), false);
-			inserted[0] = true;  
+			inserted[0] = true;
+			typename std::list<T>::iterator pendingIt;
 			for (size_t j = 0; j < jSeq.size(); j++)
 			{
 				size_t idx = jSeq[j];
 				if (idx < pending.size() && !inserted[idx])
 				{
-					binaryInsert(mainChain, getListValue(pending, idx));
+					pendingIt = pending.begin();
+					std::advance(pendingIt, idx);
+					binaryInsert(mainChain, *pendingIt);
 					inserted[idx] = true;
 				}
 			}
@@ -189,7 +210,11 @@ class PmergeMe
 			for (size_t index = 0; index < pending.size(); index++)
 			{
 				if (!inserted[index])
-					binaryInsert(mainChain, getListValue(pending, index));
+				{
+					pendingIt = pending.begin();
+					std::advance(pendingIt, index);
+					binaryInsert(mainChain, *pendingIt);
+				}
 			}
 			//insertar el leftover
 			if (hasLeftover)
