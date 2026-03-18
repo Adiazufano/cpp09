@@ -21,13 +21,14 @@ int main(int argc, char *argv[])
 		std::cerr << e.what() << '\n';
 	}
 	
-	//cout << argv[1] << endl;
-	/*std::list<int>::iterator it;
-	for (it = secuenceL.begin(); it != secuenceL.end() ; ++it)
-		cout << *it << endl;*/
 	p.fordJohnson(secuenceV);
+	p.fordJohnson(secuenceL);
 	std::vector<long> temp = secuenceV;
 	for (size_t index = 0; index < temp.size(); index++)
 		cout << secuenceV[index] << endl;
+	cout << endl;
+	std::list<long>::iterator it;
+	for (it = secuenceL.begin(); it != secuenceL.end() ; ++it)
+		cout << *it << endl;
 	return(0);
 }

@@ -2,7 +2,7 @@ NAME=PmergeMe
 SRCS=main.cpp PmergeMe.cpp
 OBJS=$(SRCS:.cpp=.o)
 CXX=c++
-CXXFLAGS=-Wall -Wextra -Werror -std=c++98 -ftemplate-depth=10000
+CXXFLAGS=-Wall -Wextra -Werror -std=c++98 #-ftemplate-depth=10000
 
 all:$(NAME)
 
