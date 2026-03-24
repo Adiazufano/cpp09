@@ -6,7 +6,7 @@
 /*   By: aldiaz-u <aldiaz-u@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 18:59:57 by aldiaz-u          #+#    #+#             */
-/*   Updated: 2026/02/27 13:06:12 by aldiaz-u         ###   ########.fr       */
+/*   Updated: 2026/03/24 15:00:25 by aldiaz-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ float BitcoinExchange::getValue(const string& date) const
 	if (it != values.end() && it -> first == date)
 		return it -> second;
 	if (it == values.begin())
-		throw std::runtime_error("Error: date out of range => " + date);
+		return -1;
 	--it;
 	return it -> second;
 }

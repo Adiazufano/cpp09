@@ -6,6 +6,7 @@
 #include <exception>
 #include <sstream>
 #include <stdlib.h>
+#include <iomanip>
 
 using std::string;
 using std::cout;

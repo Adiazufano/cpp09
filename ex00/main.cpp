@@ -6,7 +6,7 @@
 /*   By: aldiaz-u <aldiaz-u@student.42madrid.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/24 18:59:50 by aldiaz-u          #+#    #+#             */
-/*   Updated: 2026/03/13 12:23:56 by aldiaz-u         ###   ########.fr       */
+/*   Updated: 2026/03/24 15:02:33 by aldiaz-u         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,11 +103,16 @@ void	checkInput(std::ifstream &readInput, string &line, string filename, char se
 			else
 			{
 				if (value < 0)
-					cout << "Error: not positive value" << endl;
+					cout << filename << " Error: not positive value " << nline << endl;
 				else if (value > 1000)
 					cout << filename << " line: " << nline << " too large a number " << endl;
 				else
-					cout << std::fixed << std::setprecision(2) << date << " => " << value << " = " << static_cast<double>(value * bt.getValue(date)) << endl;
+				{
+					if (bt.getValue(date) != -1)
+						cout << std::fixed << std::setprecision(2) << date << " => " << value << " = " << static_cast<double>(value * bt.getValue(date)) << endl;
+					else
+						cout << filename << " Error: date out of range " << nline << endl;
+				}
 			}
 		}
 		nline++;

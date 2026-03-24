@@ -25,7 +25,7 @@ void	tokenizer(string &arg, RPN &rpn)
 		else
 			rpn.addValue(static_cast<double>(num));
 	}
-	cout << rpn.getValue() << endl;
+	cout << std::fixed << std::setprecision(2) << rpn.getValue()  << endl;
 }
 
 int	main(int argc, char *argv[])
