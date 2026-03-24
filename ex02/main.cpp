@@ -7,7 +7,6 @@ int main(int argc, char *argv[])
 		cout << "Error: necesitas al menos 1 argumento" << endl;
 		return(1);
 	}
-	/*PARSEO*/
 	PmergeMe p;
 	std::vector<long> secuenceV;
 	std::list<long> secuenceL;
@@ -19,20 +18,29 @@ int main(int argc, char *argv[])
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
+		return 1;
 	}
 	
-	cout << "after: ";
-	for (size_t index = 0; index < 5; index++)
-		cout << secuenceV[index] << " ";
-	cout << "[...]" << endl;
-
-	p.fordJohnson(secuenceV);
-	p.fordJohnson(secuenceL);
-	
 	cout << "before: ";
-	for (size_t index = 0; index < 5; index++)
+	for (size_t index = 0; index < secuenceV.size() ; index++)
 		cout << secuenceV[index] << " ";
-	cout << "[...]" << endl;
+	cout << endl;
+
+	clock_t tStartV = clock();
+	p.fordJohnson(secuenceV);
+	double timeV = (double)(clock() - tStartV) / CLOCKS_PER_SEC * 1000;
+
+	clock_t tStartL = clock();
+	p.fordJohnson(secuenceL);
+	double timeL = (double)(clock() - tStartL) / CLOCKS_PER_SEC * 1000;
+	
+	cout << "after: ";
+	for (size_t index = 0; index < secuenceV.size() ; index++)
+		cout << secuenceV[index] << " ";
+	cout << endl;
+
+	cout << "Time to process a range of " << secuenceV.size() << " elements with std::vector: " << timeV << "ms" << endl;
+	cout << "Time to process a range of " << secuenceV.size() << " elements with std::list: " << timeL << "ms" << endl;
 
 	return(0);
 }

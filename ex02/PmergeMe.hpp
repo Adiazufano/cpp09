@@ -19,6 +19,8 @@ class PmergeMe
 		PmergeMe();
 		std::vector<long> addToVector(char *argv[]);
 		std::list<long> addToList(char *argv[]);
+		PmergeMe(const PmergeMe& other);
+		PmergeMe& operator=(const PmergeMe& other);
 		~PmergeMe();
 		template<typename T>
 		void binaryInsert(std::vector<T>& sorted, T value)
@@ -34,26 +36,11 @@ class PmergeMe
 		}
 		std::vector<size_t> jacobsthal(size_t n);
 		template<typename T>
-		void	fordJohnson(std::vector<T>& secuenceV)
-		{
-			clock_t tStart = clock();
-			fordJohnsonHelper(secuenceV);
-			cout << "Time to process a range of " << secuenceV.size() << " elements with std::vector: " << (double)(clock() - tStart)/CLOCKS_PER_SEC  * 1000 << "ms" << endl;
-		}
-
-		template<typename T>
-		void fordJohnson(std::list<T>& secuenceL)
-		{
-			clock_t tStart = clock();
-			fordJohnsonHelper(secuenceL);
-			cout << "Time to process a range of " << secuenceL.size() << " elements with std::list: " << (double)(clock() - tStart)/CLOCKS_PER_SEC * 1000 << "ms" << endl;
-		}
-		template<typename T>
-		void fordJohnsonHelper(std::vector<T>& secuenceV)
+		void fordJohnson(std::vector<T>& secuenceV)
 		{
 			size_t size = secuenceV.size();
 			if (size <= 1)
-				return;  // ✅ Sin imprimir tiempo
+				return;
 			
 			T leftover = T();
 			bool hasLeftover = false;
@@ -78,7 +65,7 @@ class PmergeMe
 			for (size_t index = 0; index < vectorX.size(); index++)
 				mainChain.push_back(vectorX[index].second);
 			
-			fordJohnsonHelper(mainChain);  // ✅ Recursión sin timing
+			fordJohnson(mainChain);
 			/*Insertar el primer menor (par del menor mainchain[0])
 			  encontrar e par cuyo mayor es mainChain[0]*/
 			std::vector<T> pending;
@@ -141,11 +128,11 @@ class PmergeMe
 			*it = value;
 		}
 		template<typename T>
-		void	fordJohnsonHelper(std::list<T>& secuenceL)
+		void	fordJohnson(std::list<T>& secuenceL)
 		{
 			size_t size = secuenceL.size();
 			if (size <= 1)
-				return;  // ✅ Sin imprimir tiempo
+				return;
 			
 			T leftover = T();
 			bool hasLeftover = false;
@@ -172,7 +159,7 @@ class PmergeMe
 				mainChain.push_back(it->second); 
 			}
 
-			fordJohnsonHelper(mainChain);
+			fordJohnson(mainChain);
 
 			std::list<T> pending;
 			std::vector<bool> marked(listX.size(), false);
@@ -191,7 +178,7 @@ class PmergeMe
 				}
 			}
 			mainChain.insert(mainChain.begin(), pending.front());
-			std::vector<size_t> jSeq = jacobsthal(pending.size() - 1);  
+			std::vector<size_t> jSeq = jacobsthal(pending.size());  
 			std::vector<bool> inserted(pending.size(), false);
 			inserted[0] = true;
 			typename std::list<T>::iterator pendingIt;
