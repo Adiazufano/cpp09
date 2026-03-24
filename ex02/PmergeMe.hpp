@@ -22,6 +22,7 @@ class PmergeMe
 		PmergeMe(const PmergeMe& other);
 		PmergeMe& operator=(const PmergeMe& other);
 		~PmergeMe();
+
 		template<typename T>
 		void binaryInsert(std::vector<T>& sorted, T value)
 		{
@@ -34,6 +35,7 @@ class PmergeMe
 			typename std::list<T>::iterator pos = std::lower_bound(sorted.begin(), sorted.end(), value);
 			sorted.insert(pos, value);
 		}
+
 		std::vector<size_t> jacobsthal(size_t n);
 		template<typename T>
 		void fordJohnson(std::vector<T>& secuenceV)
@@ -107,6 +109,7 @@ class PmergeMe
 				binaryInsert(mainChain, leftover);
 			secuenceV = mainChain;
 		}
+
 		template <typename T>
 		T getListValue(std::list<T> l, long index)
 		{
@@ -116,16 +119,6 @@ class PmergeMe
 			for (int i = 0; i < index; i++)
 				++it;
 			return (*it);
-		}
-		template <typename T>
-		void setListValue(std::list<T> l, long index, T value)
-		{
-			typename std::list<T>::iterator it = l.begin();
-			if (index  < 0 || index >= static_cast<long>(l.size()))
-				throw std::out_of_range("indeice fuera de rango");
-			for (int i = 0; i < index; i++)
-				++it;
-			*it = value;
 		}
 		template<typename T>
 		void	fordJohnson(std::list<T>& secuenceL)
